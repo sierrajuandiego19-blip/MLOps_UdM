@@ -1,6 +1,7 @@
 # Predicción de suscripción a depósito a plazo fijo
 
 **Proyecto final MLOps — Universidad de Medellín**
+**Autores:** Luciano Sanín · Juan Diego Sierra
 
 Sistema de ML end-to-end que predice qué clientes bancarios suscribirán un
 depósito a plazo fijo, para priorizar las llamadas de un call center.

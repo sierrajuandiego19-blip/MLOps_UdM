@@ -1,7 +1,5 @@
 # Entrega — Proyecto Final MLOps
 
-> **Antes de enviar:** reemplazar `[NOMBRES]` por los nombres de los autores.
->
 > Para enviarlo por **correo**, usar [`correo-entrega.txt`](correo-entrega.txt):
 > es el mismo contenido en texto plano, porque Gmail y Outlook no renderizan
 > las tablas ni los bloques de código de Markdown.
@@ -12,7 +10,7 @@
 
 Profesor,
 
-Le comparto la entrega de nuestro proyecto final. Lo hicimos [NOMBRES].
+Le comparto la entrega de nuestro proyecto final. Lo hicimos Luciano Sanín y Juan Diego Sierra.
 
 | | |
 |---|---|
@@ -155,7 +153,8 @@ Preferimos declararlo nosotros:
 Quedamos atentos a cualquier comentario.
 
 Un saludo,
-[NOMBRES]
+Luciano Sanín
+Juan Diego Sierra
 
 ---
 
@@ -163,7 +162,7 @@ Un saludo,
 
 Para la plataforma del curso, un chat, o si el correo debe ser breve.
 
-> Entrega del proyecto final MLOps — [NOMBRES]
+> Entrega del proyecto final MLOps — Luciano Sanín y Juan Diego Sierra
 >
 > **Repositorio:** <https://github.com/sierrajuandiego19-blip/MLOps_UdM/tree/main/Project/bank-term-deposit-mlops>
 > **API desplegada:** <https://bank-term-deposit-api.onrender.com/docs>
