@@ -70,7 +70,7 @@ campeon: bank-term-deposit-classifier v1 umbral 0.42
 > datos y los 10 archivos `MLmodel`. Detalle en
 > [`docs/compartir.md`](docs/compartir.md).
 
-### Levantar todo
+### Ver todo funcionando
 
 ```powershell
 ./run.ps1 demo-up      # MLflow, Prefect, worker y API, cada uno en su ventana
@@ -394,6 +394,11 @@ siguen gratis y un sitio estático no puede servir el modelo.
 En Render: **New → Blueprint** y seleccionar el repositorio. No hay nada que
 configurar a mano.
 
+> **Si la URL tarda en abrir, no está caída.** El plan gratuito de Render
+> suspende el servicio tras 15 minutos sin tráfico y el arranque en frío tarda
+> entre 30 y 60 segundos. La primera petición es lenta; a partir de ahí
+> responde en milisegundos.
+
 Lo que hace que esto no sea un proyecto aparte: el modelo exportado (~1 MB)
 viaja **dentro de la imagen**, así que el contenedor no necesita un tracking
 server ni una base de datos. Y cabe de sobra en los 512 MB del plan gratuito:
@@ -537,7 +542,6 @@ nadie las descubra en producción:
 
 | Documento | Contenido |
 |---|---|
-| [`docs/presentacion.md`](docs/presentacion.md) | **Guion de exposición para 2 personas (25 min)**: qué levantar, qué decir en cada pantalla, preguntas probables y plan B |
 | [`docs/compartir.md`](docs/compartir.md) | Cómo clonarlo en otra máquina, cómo entregarlo, y cómo trabajar en equipo sin romper `mlflow.db` |
 | [`docs/mensaje-entrega.md`](docs/mensaje-entrega.md) | Texto listo para enviar al profesor y a quienes hagan la evaluación por pares |
 | [`docs/business_case.md`](docs/business_case.md) | Problema, supuestos, métricas de éxito, timeline, alcance |
@@ -545,6 +549,7 @@ nadie las descubra en producción:
 | [`docs/deployment.md`](docs/deployment.md) | Local, Docker, cloud, CI/CD, schedules, troubleshooting |
 | [`docs/api.md`](docs/api.md) | Endpoints, validación, códigos de estado, lo que falta |
 | [`models/model_card.md`](models/model_card.md) | Uso previsto, desempeño, limitaciones (autogenerada) |
+| [`docs/presentacion.md`](docs/presentacion.md) | Recorrido comentado del proyecto, pantalla por pantalla |
 | `reports/drift_report_latest.html` | Último reporte de monitoreo |
 
 ---

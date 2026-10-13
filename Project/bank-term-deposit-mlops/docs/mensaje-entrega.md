@@ -24,6 +24,10 @@ Antes de enviarlo, reemplazar:
 >
 > **API desplegada:** [LINK DE RENDER]
 >
+> (Está en el plan gratuito de Render, que suspende el servicio tras 15 minutos
+> sin tráfico: si tarda ~50 segundos en abrir la primera vez, es el arranque en
+> frío, no un error.)
+>
 > ---
 >
 > **Qué construimos**
@@ -145,6 +149,8 @@ Antes de enviarlo, reemplazar:
 >
 > **Repo:** https://github.com/sierrajuandiego19-blip/MLOps_UdM/tree/main/Project/bank-term-deposit-mlops
 > **API desplegada:** [LINK DE RENDER]
+> (plan gratuito: la primera carga puede tardar ~50 s por el arranque en frio)
+> (plan gratuito: la primera carga puede tardar ~50 s por el arranque en frío)
 >
 > Predicción de suscripción a depósito a plazo fijo sobre UCI Bank Marketing.
 > Test: PR-AUC 0,4909 (piso 0,113), lift 3,31x en el top 20%, 78% menos llamadas
