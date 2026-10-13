@@ -237,3 +237,9 @@ settings_local.py
 03-Orchestrarion/mlruns/
 
 03-Orchestration/Prefect-pipelines/models/
+# -----------------------------------------------------------------------------
+# Proyecto final MLOps: el blueprint de despliegue tiene que estar versionado.
+# Render solo busca `render.yaml` en la raiz del repositorio, y la regla
+# `*.yaml` de mas arriba lo ocultaba.
+# -----------------------------------------------------------------------------
+!render.yaml

@@ -130,56 +130,67 @@ docker compose --profile training up trainer
 
 ### Qué se eligió y por qué
 
-**Hugging Face Spaces** con SDK Docker:
+**Render**, con un Blueprint declarativo.
 
-| Opción | Dificultad | Veredicto |
-|---|---|---|
-| **Hugging Face Spaces** | Baja | **Elegida.** Gratis sin tarjeta, construye desde un Dockerfile, y solo se duerme tras **48 h** sin tráfico — decisivo si hay que mostrarla en vivo |
-| Render (Blueprint) | Baja | Configurado como respaldo (`render.yaml`). Igual de simple, pero el plan gratuito apaga el servicio tras **15 min** sin tráfico y el arranque en frío tarda ~50 s |
-| Fly.io | Media | Requiere tarjeta y CLI |
-| AWS ECS + ECR | Alta | VPC, IAM, task definitions, load balancer. Desproporcionado para una API de un endpoint |
-| AWS SageMaker | Alta | Formato de modelo propio, endpoints gestionados, costo por hora |
+| Opción | Veredicto |
+|---|---|
+| **Render** | **Elegida.** Tier gratuito real en 2026: Docker, sin tarjeta, 750 h/mes, 512 MB de RAM. Un solo archivo (`render.yaml`) describe el servicio completo |
+| Hugging Face Spaces | **Descartada.** Desde 2026 exige plan **PRO de pago** para cualquier SDK que ejecute código (Gradio, Docker). Solo los *Static Spaces* siguen gratis, y un sitio estático no puede servir el modelo. La configuración quedó en `deploy/huggingface/` por si alguien tiene PRO |
+| Fly.io | Requiere tarjeta |
+| AWS ECS + ECR | VPC, IAM, task definitions, load balancer. Desproporcionado para una API de un endpoint |
+| AWS SageMaker | Formato de modelo propio, endpoints gestionados, costo por hora |
 
 Lo que hace viable la opción simple es una decisión de diseño concreta: el
 modelo exportado pesa ~1 MB y viaja **dentro de la imagen**. Sin eso habría que
-desplegar también un tracking server y una base de datos, y el deployment en
-cloud dejaría de ser un ejercicio de tres comandos.
+desplegar también un tracking server y una base de datos.
+
+### ¿Cabe en 512 MB?
+
+Sí, con margen. Medido en local con el modelo cargado y tras 20 predicciones:
+
+| Momento | RSS |
+|---|---|
+| Python arrancado | 18 MB |
+| Aplicación importada | 147 MB |
+| Modelo cargado | 321 MB |
+| Tras 20 predicciones | 323 MB |
+
+Pico de 324 MB contra un límite de 512 MB. El consumo no crece con el tráfico
+porque el modelo se carga una sola vez y se cachea.
 
 ### Pasos
 
 ```bash
-# 1. Exportar el campeón a un directorio autocontenido
+# 1. Exportar el campeón a un directorio autocontenido (si no está ya)
 uv run python scripts/export_model.py
 
-# 2. Ensamblar el repositorio del Space en build/huggingface-space/
-uv run python scripts/deploy_huggingface.py
-
-# 3. Subirlo (requiere el Space ya creado en huggingface.co/new-space)
-uv run python scripts/deploy_huggingface.py --space TU-USUARIO/bank-term-deposit-api --push
+# 2. Versionarlo
+git add models/champion render.yaml
+git commit -m "deploy: modelo exportado"
+git push
 ```
 
-Al crear el Space: **SDK Docker**, template **Blank**, hardware **CPU basic**
-(gratis). Para el push, el usuario es el nombre de HF y la contraseña es un
-*Access Token* con permiso de escritura
-(<https://huggingface.co/settings/tokens>).
+Luego, en Render: **New → Blueprint**, autorizar el repositorio de GitHub y
+seleccionarlo. El `render.yaml` de la raíz define el servicio completo
+—runtime Docker, plan free, `rootDir` apuntando al proyecto, health check y la
+variable `BTD_SERVING__PREFER_LOCAL_MODEL`— así que no hay nada que configurar
+a mano.
 
-### Qué se sube y qué no
+> **Dónde va el `render.yaml`.** Render solo lo busca en la **raíz del
+> repositorio**, y este proyecto vive en un subdirectorio del monorepo del
+> curso. Por eso el archivo funcional está en la raíz con
+> `rootDir: Project/bank-term-deposit-mlops`, y hay una copia en el proyecto
+> para el caso de extraerlo a su propio repositorio. Mismo patrón que los
+> workflows de CI.
 
-`scripts/deploy_huggingface.py` copia solo lo que el servicio necesita en
-runtime — `src/`, `configs/`, `models/champion/`, `pyproject.toml`, `uv.lock`,
-más el `README.md` con el frontmatter del Space y el `Dockerfile` de
-`deploy/huggingface/`. Quedan fuera notebooks, tests, datos y `mlruns/`: 2,6 MB
-en total.
+### Las dos limitaciones del tier gratuito
 
-El Dockerfile de Spaces difiere del principal en tres cosas, todas impuestas
-por la plataforma: puerto **7860**, usuario con **UID 1000** (es el que Spaces
-usa, y sin él el proceso no puede escribir), y
-`BTD_SERVING__PREFER_LOCAL_MODEL=true` fijado en la imagen.
-
-### Alternativa: Render
-
-`render.yaml` está listo. En Render: **New → Blueprint**, apuntar al
-repositorio. No hay nada que configurar en la interfaz.
+1. **Se duerme tras 15 minutos sin tráfico**, y el arranque en frío tarda
+   30-60 s. Para una demostración en vivo: abrir la URL un par de minutos antes
+   de empezar.
+2. **Sistema de archivos efímero**: lo que el servicio escriba en disco se
+   pierde al reiniciar. No afecta aquí, porque la API no persiste nada; el
+   scoring batch, que sí escribe, corre en local.
 
 ### Estado de verificación
 

@@ -6,7 +6,8 @@ compañeros que hagan la evaluación por pares).
 Antes de enviarlo, reemplazar:
 
 - `[NOMBRES]` — tus nombres
-- `[LINK DEL SPACE]` — la URL del Space, o borrar esa línea si no lo desplegaron
+- `[LINK DE RENDER]` — la URL del servicio en Render, o borrar esa línea si no
+  alcanzaron a desplegarlo
 
 ---
 
@@ -21,7 +22,7 @@ Antes de enviarlo, reemplazar:
 > **Repositorio:**
 > https://github.com/sierrajuandiego19-blip/MLOps_UdM/tree/main/Project/bank-term-deposit-mlops
 >
-> **API desplegada:** [LINK DEL SPACE]
+> **API desplegada:** [LINK DE RENDER]
 >
 > ---
 >
@@ -58,7 +59,7 @@ Antes de enviarlo, reemplazar:
 > y al final debe imprimir:
 >
 > ```
-> 153 passed
+> 173 passed
 > campeon: bank-term-deposit-classifier v1 umbral 0.42
 > ```
 >
@@ -143,7 +144,7 @@ Antes de enviarlo, reemplazar:
 > Entrega del proyecto final — [NOMBRES]
 >
 > **Repo:** https://github.com/sierrajuandiego19-blip/MLOps_UdM/tree/main/Project/bank-term-deposit-mlops
-> **API desplegada:** [LINK DEL SPACE]
+> **API desplegada:** [LINK DE RENDER]
 >
 > Predicción de suscripción a depósito a plazo fijo sobre UCI Bank Marketing.
 > Test: PR-AUC 0,4909 (piso 0,113), lift 3,31x en el top 20%, 78% menos llamadas
@@ -160,7 +161,7 @@ Antes de enviarlo, reemplazar:
 > ```
 >
 > No hace falta reentrenar: el repo incluye el historial de MLflow. `setup` debe
-> terminar con `153 passed` y `campeon: ... v1 umbral 0.42`.
+> terminar con `173 passed` y `campeon: ... v1 umbral 0.42`.
 >
 > El README tiene una tabla que mapea cada fase del enunciado con el archivo
 > donde está implementada. Los notebooks vienen ejecutados y con salidas.
@@ -175,7 +176,7 @@ Antes de enviarlo, reemplazar:
 ## Checklist antes de enviar
 
 ```powershell
-./run.ps1 check        # lint + los 153 tests
+./run.ps1 check        # lint + los 173 tests
 git status             # que no quede nada sin subir
 git push
 ```

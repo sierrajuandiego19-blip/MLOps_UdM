@@ -60,7 +60,7 @@ curl http://127.0.0.1:8000/health      # API -> debe decir "healthy"
 | 5 | <http://127.0.0.1:8000/docs> | Bloque 5 (API en vivo) |
 | 6 | `reports/drift_report_latest.html` | Bloque 6 (monitoreo) |
 | 7 | `notebooks/01_eda.ipynb` en VSCode | Bloque 2 (EDA) |
-| 8 | El Space de Hugging Face | Bloque 5 (cloud) |
+| 8 | La API en Render | Bloque 5 (cloud) |
 
 ### Reparto
 
@@ -262,11 +262,11 @@ docker compose up --build
 > 'proceso vivo' de 'modelo cargado'. El compose levanta MLflow y la API
 > juntos."
 
-**c) Cloud — el Space de Hugging Face**
+**c) Cloud — la API en Render**
 
-> "Y está desplegado. Esta es la misma API corriendo en Hugging Face Spaces."
+> "Y está desplegado. Esta es la misma API corriendo en Render."
 
-*(Abrir el Space y hacer una predicción desde `/docs` ahí.)*
+*(Abrir la URL de Render y hacer una predicción desde `/docs` ahí.)*
 
 > "Lo que hizo esto fácil fue una decisión de diseño: exportamos el campeón a
 > una copia autocontenida de **1 MB** que viaja dentro de la imagen. El
@@ -344,7 +344,7 @@ uv run python -m src.pipelines.monitoring_flow
 uv run pytest
 ```
 
-> "153 tests, corren en 10 segundos porque usan datos sintéticos: no descargan
+> "173 tests, corren en 10 segundos porque usan datos sintéticos: no descargan
 > nada ni necesitan un modelo entrenado."
 
 **Mencionar 3 tests concretos, no el número:**
@@ -446,7 +446,7 @@ Si hay que recortar, esto es lo que **no** se saca:
 | La API dice `degraded` | No hay modelo: `uv run python -m src.pipelines.training_flow` |
 | El run de Prefect queda en `Pending` | No hay worker: `uv run prefect worker start --pool local-pool` |
 | El run queda en `CRASHED` | Re-registrar: `uv run python deploy_flows.py` |
-| Hugging Face está dormido o caído | Mostrar la API local en `:8000/docs`; es el mismo código y la misma predicción |
+| Render está dormido o caído | Abrir la URL 2 min antes (el plan gratuito duerme a los 15 min). Si falla, mostrar la API local en `:8000/docs`: mismo código, misma predicción |
 | No hay internet | Todo funciona local: el dataset está en caché en `data/raw/` |
 | Docker no arranca | Mostrar el Dockerfile y el job `docker` del CI. Decirlo, no disimularlo |
 

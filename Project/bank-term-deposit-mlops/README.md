@@ -59,7 +59,7 @@ las rutas de MLflow a tu máquina y verifica. Toma ~3 minutos.
 Al terminar deberías ver:
 
 ```
-153 passed
+173 passed
 campeon: bank-term-deposit-classifier v1 umbral 0.42
 ```
 
@@ -130,7 +130,7 @@ curl -X POST http://localhost:8000/predict \
 uv run python -m src.pipelines.training_flow        # reentrena (~5 min)
 uv run python -m src.pipelines.batch_scoring_flow   # lista de llamadas priorizada
 uv run python -m src.pipelines.monitoring_flow      # drift -> reports/drift_report_latest.html
-uv run pytest                                       # 153 tests, ~10 s
+uv run pytest                                       # 173 tests, ~10 s
 ```
 
 Todos los comandos tienen atajo: `./run.ps1 help` en Windows, `make help` en
@@ -276,7 +276,7 @@ Model Registry <─────── promoción condicional <──────
 | Orquestación | **Prefect 3** | Flows, reintentos, schedules, artifacts |
 | API | **FastAPI + Pydantic v2** | Validación estricta y OpenAPI automático |
 | Monitoreo | **Implementación propia** (PSI, KS, chi²) | Umbrales interpretables, sin dependencias frágiles |
-| Testing | **pytest** | 153 tests sobre datos sintéticos |
+| Testing | **pytest** | 173 tests sobre datos sintéticos |
 | Calidad | **ruff + black + pre-commit** | |
 | CI | **GitHub Actions** | Lint, tests, smoke del pipeline, build de imagen |
 
@@ -313,7 +313,7 @@ bank-term-deposit-mlops/
 │   ├── 01_eda.ipynb             # EDA (ejecutado, con salidas)
 │   ├── 02_baseline.ipynb        # Baselines y umbral de negocio
 │   └── 03_experiments.ipynb     # Lectura de MLflow y modelo final
-├── tests/unit/                  # 153 tests
+├── tests/unit/                  # 173 tests
 ├── docs/
 │   ├── business_case.md         # Problema, supuestos, métricas, alcance
 │   ├── monitoring.md            # Diseño de monitoreo en cuatro capas
@@ -350,9 +350,9 @@ bank-term-deposit-mlops/
 | **4.1** | Dockerfile | Completo, **verificado en CI** | `Dockerfile`. No se construyó en la máquina de desarrollo (sin Docker instalado), pero el job `docker` del CI lo construye en cada push y comprueba que el contenedor responda en `/health` |
 | **4.1** | Imagen optimizada *(nice to have)* | Completo | Build en dos etapas, usuario sin privilegios, `.dockerignore` |
 | **4.2** | API REST, endpoints, validación de inputs | Completo | `src/api/`, [`docs/api.md`](docs/api.md) |
-| **4.3** | Cloud + CI/CD *(nice to have)* | Completo | Hugging Face Spaces (`deploy/huggingface/`), Render como respaldo (`render.yaml`), CI en `.github/workflows/` |
+| **4.3** | Cloud + CI/CD *(nice to have)* | Completo | Render (`render.yaml`), CI en `.github/workflows/` con 5 jobs |
 | **5** | Diseño de monitoreo | **Completo e implementado**, más allá del diseño pedido | [`docs/monitoring.md`](docs/monitoring.md) |
-| **6.1** | Unit tests | Completo | 153 tests |
+| **6.1** | Unit tests | Completo | 173 tests |
 | **6.2** | Linter, formatter, pre-commit *(nice to have)* | Completo | ruff, black, `.pre-commit-config.yaml` |
 | **6.3** | README, documentación de API, guías de deployment | Completo | `docs/` |
 
@@ -386,25 +386,21 @@ estrictamente más información que autolog. Es `src/models/train.py:168-250`.
 
 ### Sobre el deployment en cloud
 
-Desplegado en **Hugging Face Spaces** (SDK Docker). Se eligió sobre Render
-porque el plan gratuito de Render apaga el servicio tras 15 min sin tráfico y
-tarda ~50 s en arrancar en frío, mientras Spaces aguanta 48 h despierto — algo
-que importa si hay que mostrar la API en vivo. `render.yaml` queda como
-respaldo.
+Desplegado en **Render** con un Blueprint (`render.yaml` en la raíz del
+repositorio). Se evaluó Hugging Face Spaces, pero desde 2026 exige plan **PRO
+de pago** para cualquier SDK que ejecute código; solo los *Static Spaces*
+siguen gratis y un sitio estático no puede servir el modelo.
 
-```bash
-uv run python scripts/export_model.py          # exporta el campeón (~1 MB)
-uv run python scripts/deploy_huggingface.py    # ensambla el repo del Space
-uv run python scripts/deploy_huggingface.py --space USUARIO/NOMBRE --push
-```
+En Render: **New → Blueprint** y seleccionar el repositorio. No hay nada que
+configurar a mano.
 
-Lo que hace que esto sean tres comandos y no un proyecto aparte: el modelo
-exportado viaja **dentro de la imagen**, así que el contenedor no necesita un
-tracking server ni una base de datos.
+Lo que hace que esto no sea un proyecto aparte: el modelo exportado (~1 MB)
+viaja **dentro de la imagen**, así que el contenedor no necesita un tracking
+server ni una base de datos. Y cabe de sobra en los 512 MB del plan gratuito:
+el pico medido es de 324 MB.
 
-Verificado localmente sobre el contenido exacto que se sube
-(`build/huggingface-space/`), con `BTD_SERVING__PREFER_LOCAL_MODEL=true` y sin
-ningún MLflow accesible:
+Verificado localmente: la API sirviendo la copia exportada, con
+`BTD_SERVING__PREFER_LOCAL_MODEL=true` y sin ningún MLflow accesible:
 
 ```
 /health:  healthy | modelo bank-term-deposit-classifier v1
@@ -452,12 +448,12 @@ Diseño de las cuatro capas (datos, predicciones, desempeño, negocio) en
 ## Testing y calidad
 
 ```bash
-uv run pytest                                  # 153 tests, ~10 s
+uv run pytest                                  # 173 tests, ~10 s
 uv run pytest --cov=src --cov-report=html      # con cobertura
 uv run ruff check src tests && uv run black --check src tests
 ```
 
-**153 tests, 52% de cobertura de líneas.**
+**173 tests, 52% de cobertura de líneas.**
 
 Sobre ese 52%, con honestidad: los módulos de lógica están bien cubiertos
 (`validate.py` 99%, `drift.py` 97%, `report.py` 98%, `schemas.py` 100%,
@@ -493,7 +489,7 @@ bonita y ninguna garantía adicional.
 | Job | Verifica |
 |---|---|
 | `quality` | ruff + black |
-| `tests` | Los 153 tests con cobertura |
+| `tests` | Los 173 tests con cobertura |
 | `pipeline-smoke` | Borra el estado versionado, entrena desde cero, puntúa un lote y comprueba el monitoreo |
 | `shipped-state` | Verifica lo que recibe quien clona: reapunta MLflow y comprueba que el campeón cargue y prediga el valor esperado |
 | `docker` | Construye la imagen y comprueba que `/health` responda |

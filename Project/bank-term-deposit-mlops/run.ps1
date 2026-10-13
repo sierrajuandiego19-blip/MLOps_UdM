@@ -236,7 +236,7 @@ switch ($Target) {
         Write-Host ""
         Write-Host "===============================================================" -ForegroundColor Green
         Write-Host " LISTO. Deberias haber visto:" -ForegroundColor Green
-        Write-Host "   153 tests pasando" -ForegroundColor Green
+        Write-Host "   173 tests pasando" -ForegroundColor Green
         Write-Host "   campeon: bank-term-deposit-classifier v1 umbral 0.42" -ForegroundColor Green
         Write-Host ""
         Write-Host " Siguiente paso:  ./run.ps1 demo-up  y luego  demo-open" -ForegroundColor Green
@@ -260,7 +260,7 @@ switch ($Target) {
         if ($LASTEXITCODE -ne 0) { throw "uv sync fallo" }
 
         Write-Host ""
-        Write-Host "[2/7] Tests (deben pasar 153)..." -ForegroundColor Yellow
+        Write-Host "[2/7] Tests (deben pasar 173)..." -ForegroundColor Yellow
         Invoke-Step @("pytest", "-q")
 
         Write-Host ""

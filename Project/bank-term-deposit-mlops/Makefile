@@ -32,7 +32,7 @@ setup:  ## TRAS CLONAR: instala, reapunta MLflow a esta máquina y verifica (~3 
 	$(UV) pytest -q
 	$(UV) python -c "from src.models.registry import load_champion; c = load_champion(allow_local_fallback=False); print(f'campeon: {c.name} v{c.version} umbral {c.threshold:.2f}')"
 	@echo ""
-	@echo "LISTO. Esperado: 153 tests | campeon v1 umbral 0.42"
+	@echo "LISTO. Esperado: 173 tests | campeon v1 umbral 0.42"
 
 bootstrap:  ## ALTERNATIVA: reproduce el estado desde cero reentrenando (~12 min)
 	uv sync --all-groups

@@ -60,12 +60,12 @@ cd MLOps_UdM\Project\bank-term-deposit-mlops
 En Linux o macOS: `make setup`.
 
 Eso hace cuatro cosas: `uv sync`, ejecuta `scripts/relocate_mlflow.py`, registra
-los flows de Prefect y verifica con los 153 tests + la carga del campeón.
+los flows de Prefect y verifica con los 173 tests + la carga del campeón.
 
 **Qué tiene que ver al final:**
 
 ```
-153 passed
+173 passed
 campeon: bank-term-deposit-classifier v1 umbral 0.42
 ```
 
@@ -88,7 +88,7 @@ Guion de la exposición: [`presentacion.md`](presentacion.md).
 | **Python 3.11+** | — | <https://www.python.org/downloads/> |
 | **uv** | Gestiona el entorno y respeta `uv.lock` | `winget install astral-sh.uv` o <https://docs.astral.sh/uv/> |
 | **Git** | Clonar | <https://git-scm.com/> |
-| Docker Desktop | Solo si va a mostrar el contenedor | <https://www.docker.com/products/docker-desktop> |
+
 
 No necesita cuenta de MLflow, de Prefect ni de nada: todo corre local. Tampoco
 necesita internet después del `uv sync`, porque el dataset viene en caché en
@@ -133,7 +133,7 @@ que hay que entregar es **el link al repositorio**.
 ### Antes de entregar, comprobar esto
 
 ```powershell
-./run.ps1 check        # lint + los 153 tests
+./run.ps1 check        # lint + los 173 tests
 ./run.ps1 demo-check   # los 3 servicios responden
 ```
 
@@ -154,10 +154,10 @@ revisor abre primero:
 https://github.com/sierrajuandiego19-blip/MLOps_UdM/tree/main/Project/bank-term-deposit-mlops
 ```
 
-**2. El link del Space** (la API desplegada), una vez creado:
+**2. El link de la API desplegada** en Render, una vez creada:
 
 ```
-https://huggingface.co/spaces/TU-USUARIO/bank-term-deposit-api
+https://bank-term-deposit-api.onrender.com/docs
 ```
 
 **3. Una nota de tres líneas** sobre cómo ejecutarlo, porque es lo primero que
@@ -166,7 +166,7 @@ un revisor busca:
 > Proyecto en `Project/bank-term-deposit-mlops/`.
 > Para ejecutarlo: `uv sync --all-groups` y luego `./run.ps1 setup`
 > (o `make setup`). El repositorio incluye el historial de MLflow, así que
-> no hace falta reentrenar. API desplegada en: `<link del Space>`.
+> no hace falta reentrenar. API desplegada en: `<link de Render>`.
 
 ### Lo que conviene declarar sin que lo pregunten
 

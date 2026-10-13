@@ -1,0 +1,37 @@
+# =============================================================================
+# Blueprint de Render para la API del proyecto final.
+#
+# Vive en la RAÍZ del repositorio porque Render solo busca `render.yaml` aquí.
+# `rootDir` apunta al proyecto, que está en un subdirectorio del monorepo del
+# curso. Hay una copia en `Project/bank-term-deposit-mlops/render.yaml` para el
+# caso de que el proyecto se extraiga a su propio repositorio.
+#
+# Por qué Render y no Hugging Face Spaces: desde 2026, Spaces exige plan PRO de
+# pago para cualquier SDK que ejecute código (Gradio, Docker); solo los Static
+# Spaces siguen siendo gratis, y un sitio estático no puede servir el modelo.
+# Render mantiene un tier gratuito real, con Docker y sin tarjeta.
+#
+# Despliegue: en Render, New > Blueprint, y apuntar a este repositorio.
+# =============================================================================
+
+services:
+  - type: web
+    name: bank-term-deposit-api
+    runtime: docker
+    plan: free
+    region: oregon
+    rootDir: Project/bank-term-deposit-mlops
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+
+    envVars:
+      # Servir la copia local del modelo: en el contenedor no hay tracking
+      # server, y sin esto el arranque gasta tiempo en una conexión que
+      # siempre falla antes de caer al fallback.
+      - key: BTD_SERVING__PREFER_LOCAL_MODEL
+        value: "true"
+
+      - key: PYTHONUNBUFFERED
+        value: "1"
