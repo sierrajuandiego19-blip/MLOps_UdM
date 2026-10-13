@@ -92,6 +92,18 @@ jobs:
       - name: Instalar dependencias
         run: uv sync --frozen
 
+      # El repositorio versiona el estado de MLflow a propósito (ver
+      # docs/compartir.md), con rutas ABSOLUTAS de la máquina donde se entrenó.
+      # Este job comprueba la reproducibilidad desde cero, así que hay que
+      # borrarlo: si se deja, MLflow intenta escribir en `/C:/Users/...` y en
+      # Linux eso falla al crear un directorio en la raíz del sistema.
+      - name: Partir de un estado limpio
+        run: |
+          rm -rf mlruns mlflow.db mlflow.db.bak
+          rm -rf data/raw data/processed data/reference data/predictions
+          rm -rf models/champion models/champion_metadata.json models/model_card.md
+          rm -f reports/*.html reports/*.json
+
       # Entrena de verdad (descargando el dataset) pero sin tuning: verifica
       # que el pipeline completo funciona en una máquina limpia, que es
       # exactamente lo que hará quien evalúe el proyecto.
@@ -125,6 +137,78 @@ jobs:
           drifted = monitoring_pipeline(drift_strength=0.8, n_rows=1500)
           assert drifted['decision']['retrain_recommended'], 'el drift inyectado no se detecto'
           print('Monitoreo verificado en ambos escenarios')
+          "
+
+  # Verifica lo que recibe quien clona el repositorio: el estado de MLflow
+  # versionado, reapuntado a esta máquina. Es el escenario real de la
+  # evaluación por pares, y además cruza de sistema operativo (se versiona
+  # desde Windows y aquí corre Ubuntu), que es donde estaban los bugs de rutas.
+  shipped-state:
+    name: El estado versionado funciona tras clonar
+    runs-on: ubuntu-latest
+    needs: [quality, tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Instalar dependencias
+        run: uv sync --frozen
+
+      - name: Reapuntar el historial de MLflow a este runner
+        run: uv run python scripts/relocate_mlflow.py
+
+      - name: No deben quedar rutas de la maquina original ni URIs malformados
+        run: |
+          uv run python -c "
+          import sqlite3
+          con = sqlite3.connect('mlflow.db')
+          cur = con.cursor()
+          stale = malformed = 0
+          for (table,) in cur.execute(\"SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'\"):
+              for column in [r[1] for r in cur.execute(f'PRAGMA table_info({table})')]:
+                  try:
+                      stale += cur.execute(f'SELECT COUNT(*) FROM \"{table}\" WHERE \"{column}\" LIKE ?', ('%C:/Users/%',)).fetchone()[0]
+                      malformed += cur.execute(f'SELECT COUNT(*) FROM \"{table}\" WHERE \"{column}\" LIKE ?', ('%file:////%',)).fetchone()[0]
+                  except Exception:
+                      pass
+          print('rutas obsoletas:', stale, '| URIs malformados:', malformed)
+          assert stale == 0, 'quedaron rutas de la maquina original'
+          assert malformed == 0, 'quedaron URIs file:// malformados'
+          "
+
+      - name: El campeon carga del registry y predice el valor esperado
+        run: |
+          uv run python -c "
+          import pandas as pd
+          from src.models.registry import load_champion
+          champion = load_champion(allow_local_fallback=False)
+          print('campeon:', champion.name, 'v' + champion.version, 'umbral', round(champion.threshold, 2))
+          assert champion.version == '1', 'el alias champion deberia apuntar a la v1'
+          assert abs(champion.threshold - 0.42) < 0.01
+          client = {'age': 62, 'job': 'retired', 'marital': 'married',
+                    'education': 'university.degree', 'default': 'no', 'housing': 'no',
+                    'loan': 'no', 'contact': 'cellular', 'month': 'mar',
+                    'day_of_week': 'tue', 'campaign': 1, 'pdays': 3, 'previous': 2,
+                    'poutcome': 'success', 'emp.var.rate': -1.8,
+                    'cons.price.idx': 92.893, 'cons.conf.idx': -46.2,
+                    'euribor3m': 1.313, 'nr.employed': 5099.1}
+          probability = float(champion.model.predict_proba(pd.DataFrame([client]))[0][1])
+          print('prediccion:', round(probability, 6))
+          assert abs(probability - 0.623523) < 1e-6, 'el modelo versionado no predice lo mismo'
+          "
+
+      - name: El monitoreo corre sobre el estado versionado
+        run: |
+          uv run python -c "
+          from src.pipelines.monitoring_flow import monitoring_pipeline
+          result = monitoring_pipeline(drift_strength=0.8, n_rows=1500)
+          assert result['decision']['retrain_recommended'], 'el drift inyectado no se detecto'
+          print('monitoreo OK')
           "
 
   docker:

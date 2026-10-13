@@ -347,7 +347,7 @@ bank-term-deposit-mlops/
 | **3.2** | ETL, transformaciones reproducibles, validación, logging | Completo | `src/data/` |
 | **3.3** | Entrenamiento automatizado, feature engineering, evaluación | Completo | `training_flow.py` |
 | **3.3** | Retraining automático *(nice to have)* | **Parcial, a propósito** | Se detecta y recomienda; ver decisión 7 |
-| **4.1** | Dockerfile | Completo, **no construido aquí** | `Dockerfile` — Docker no está instalado en esta máquina; cubierto por el job `docker` del CI |
+| **4.1** | Dockerfile | Completo, **verificado en CI** | `Dockerfile`. No se construyó en la máquina de desarrollo (sin Docker instalado), pero el job `docker` del CI lo construye en cada push y comprueba que el contenedor responda en `/health` |
 | **4.1** | Imagen optimizada *(nice to have)* | Completo | Build en dos etapas, usuario sin privilegios, `.dockerignore` |
 | **4.2** | API REST, endpoints, validación de inputs | Completo | `src/api/`, [`docs/api.md`](docs/api.md) |
 | **4.3** | Cloud + CI/CD *(nice to have)* | Completo | Hugging Face Spaces (`deploy/huggingface/`), Render como respaldo (`render.yaml`), CI en `.github/workflows/` |
@@ -494,7 +494,8 @@ bonita y ninguna garantía adicional.
 |---|---|
 | `quality` | ruff + black |
 | `tests` | Los 153 tests con cobertura |
-| `pipeline-smoke` | Entrena desde cero, puntúa un lote y comprueba el monitoreo |
+| `pipeline-smoke` | Borra el estado versionado, entrena desde cero, puntúa un lote y comprueba el monitoreo |
+| `shipped-state` | Verifica lo que recibe quien clona: reapunta MLflow y comprueba que el campeón cargue y prediga el valor esperado |
 | `docker` | Construye la imagen y comprueba que `/health` responda |
 
 El smoke test **afirma**, no solo ejecuta:
@@ -568,9 +569,10 @@ Los notebooks están **ejecutados y con salidas**: se pueden leer sin ejecutar
 nada.
 
 Una cosa que se declara por adelantado, para que no haya que buscarla: el
-**Dockerfile no se construyó** en la máquina de desarrollo (Docker no estaba
-instalado; lo verifica el job `docker` del CI). El deployment en cloud sí está
-hecho.
+**Dockerfile no se construyó en la máquina de desarrollo** porque no teníamos
+Docker instalado. Lo construye el job `docker` del CI en cada push, sobre un
+runner limpio, y además comprueba que el contenedor arranque y responda en
+`/health`. El resultado se puede ver en la pestaña Actions del repositorio.
 
 ---
 

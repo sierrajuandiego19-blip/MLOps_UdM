@@ -6,8 +6,8 @@
 |---|---|
 | Versión registrada | 1 |
 | Alias | `champion` |
-| Familia del modelo | xgboost_tuned |
-| Run de MLflow | `0770a64d966747feba24b8842bff2276` |
+| Familia del modelo | random_forest |
+| Run de MLflow | `739152c8e01c4d318de33f87158af38e` |
 | Umbral de decisión | 0.42 |
 | Métrica de selección | `pr_auc` (PR-AUC) |
 
@@ -41,12 +41,12 @@ la propia documentación del dataset.
 
 | Métrica | Valor |
 |---|---|
-| PR-AUC (primaria) | 0.4909 |
-| ROC-AUC | 0.8183 |
-| Precision @ umbral | 0.3469 |
-| Recall @ umbral | 0.6789 |
-| F1 | 0.4592 |
-| Brier score | 0.1521 |
+| PR-AUC (primaria) | 0.4845 |
+| ROC-AUC | 0.8144 |
+| Precision @ umbral | 0.3437 |
+| Recall @ umbral | 0.6886 |
+| F1 | 0.4586 |
+| Brier score | 0.1446 |
 | Lift en el top 20% | 3.31x |
 | Recall en el top 20% | 0.663 |
 
@@ -58,10 +58,10 @@ $80 por suscripción):
 
 | Métrica | Valor |
 |---|---|
-| Utilidad del modelo | $35,872 |
+| Utilidad del modelo | $36,248 |
 | Utilidad llamando a todos | $8,336 |
-| **Ganancia incremental** | **$27,536** |
-| Costo por adquisición | $23.06 |
+| **Ganancia incremental** | **$27,912** |
+| Costo por adquisición | $23.27 |
 
 ## Limitaciones conocidas
 

@@ -119,8 +119,9 @@ Antes de enviarlo, reemplazar:
 > Preferimos declararlo nosotros:
 >
 > - **El Dockerfile no lo construimos en nuestra máquina** porque no teníamos
->   Docker instalado durante el desarrollo. El build y el arranque del contenedor
->   los verifica el job `docker` del workflow de CI.
+>   Docker instalado. Lo construye el job `docker` del CI en cada push, sobre un
+>   runner limpio, y además comprueba que el contenedor arranque y responda en
+>   `/health`. Se puede ver en la pestaña Actions del repositorio.
 > - **No hicimos auditoría de equidad.** `age`, `marital` y `education` son
 >   predictivas y a la vez atributos sensibles. Hacer el análisis a medias nos
 >   pareció peor que declararlo pendiente. Está en la model card.
@@ -165,8 +166,9 @@ Antes de enviarlo, reemplazar:
 > donde está implementada. Los notebooks vienen ejecutados y con salidas.
 >
 > Nota: el Dockerfile no lo construimos localmente (no teníamos Docker); lo
-> verifica el CI. Tampoco hicimos auditoría de equidad, y está declarado como
-> limitación en la model card.
+> construye y verifica el CI en cada push, visible en la pestaña Actions.
+> Tampoco hicimos auditoría de equidad, y está declarado como limitación en la
+> model card.
 
 ---
 

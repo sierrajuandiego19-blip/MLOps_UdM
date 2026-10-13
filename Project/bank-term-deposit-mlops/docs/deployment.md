@@ -114,11 +114,15 @@ docker compose --profile training up trainer
 
 ### Estado de verificación
 
-> El Dockerfile y el `docker-compose.yml` **no se construyeron en esta máquina**:
-> Docker no está instalado aquí. La construcción y el arranque del contenedor
-> están cubiertos por el job `docker` del workflow de CI, que además verifica
-> que `/health` responda. Hasta que ese workflow corra en GitHub, considéralos
-> revisados pero no ejecutados.
+> El Dockerfile y el `docker-compose.yml` **no se construyeron en la máquina de
+> desarrollo**: Docker no estaba instalado allí.
+>
+> Sí se construyen en CI. El job `docker` levanta un runner limpio de Ubuntu,
+> construye la imagen desde cero y arranca el contenedor comprobando que
+> `/health` responda. Corre en cada push y el resultado está en la pestaña
+> Actions del repositorio.
+>
+> `docker-compose.yml` no lo cubre el CI: está revisado pero no ejecutado.
 
 ---
 
