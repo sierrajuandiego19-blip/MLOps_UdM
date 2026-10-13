@@ -1,0 +1,49 @@
+artifact_path: file:///C:/Users/gjaim/OneDrive - The University of Melbourne/Documents/MLOPS
+  2026/Project/bank-term-deposit-mlops/mlruns/1/models/m-f258446debf946aba9b853a660196aae/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.15
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.6.1
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.17.0
+model_id: m-f258446debf946aba9b853a660196aae
+model_size_bytes: 1000689
+model_uuid: m-f258446debf946aba9b853a660196aae
+prompts: null
+run_id: 908bb06ea49145cea6c04624c67b585c
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "age", "required": true}, {"type": "double",
+    "name": "campaign", "required": true}, {"type": "double", "name": "pdays", "required":
+    true}, {"type": "double", "name": "previous", "required": true}, {"type": "double",
+    "name": "emp.var.rate", "required": true}, {"type": "double", "name": "cons.price.idx",
+    "required": true}, {"type": "double", "name": "cons.conf.idx", "required": true},
+    {"type": "double", "name": "euribor3m", "required": true}, {"type": "double",
+    "name": "nr.employed", "required": true}, {"type": "string", "name": "job", "required":
+    true}, {"type": "string", "name": "marital", "required": true}, {"type": "string",
+    "name": "education", "required": true}, {"type": "string", "name": "default",
+    "required": true}, {"type": "string", "name": "housing", "required": true}, {"type":
+    "string", "name": "loan", "required": true}, {"type": "string", "name": "contact",
+    "required": true}, {"type": "string", "name": "month", "required": true}, {"type":
+    "string", "name": "day_of_week", "required": true}, {"type": "string", "name":
+    "poutcome", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float32", "shape": [-1,
+    2]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-10-13 02:23:47.932595'

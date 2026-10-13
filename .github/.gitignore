@@ -1,0 +1,14 @@
+# El .gitignore de la raíz ignora `*.yml` y `*.yaml` de forma global (regla
+# pensada para datos y manifiestos de Kubernetes). Eso impediría versionar los
+# workflows de GitHub Actions, que es justamente lo único que vive aquí.
+#
+# Las reglas de un .gitignore más profundo tienen precedencia, así que esta
+# negación los recupera sin tocar la configuración global del repositorio.
+#
+# Verificación:
+#   git check-ignore -v .github/workflows/project-mlops-ci.yml
+#   (no debe devolver nada)
+
+!workflows/
+!workflows/*.yml
+!workflows/*.yaml

@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reporte de drift &mdash; bank-term-deposit-mlops</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+         margin: 0; padding: 2rem 1.25rem; background: #f6f8fa; color: #1f2328; line-height: 1.55; }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.15rem; margin: 0 0 .75rem; }
+  .meta { color: #59636e; font-size: .9rem; margin-bottom: 1.5rem; }
+  section { background: #fff; border: 1px solid #d1d9e0; border-radius: 8px;
+             padding: 1.25rem; margin-bottom: 1.25rem; }
+  .verdict { background: #1a7f37; color: #fff; border: 0; }
+  .verdict h2 { color: #fff; }
+  .verdict p { margin: 0; opacity: .95; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid #eaeef2; }
+  th { color: #59636e; font-weight: 600; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  code { background: #eaeef2; padding: .1rem .35rem; border-radius: 4px; font-size: .85em; }
+  .badge { color: #fff; padding: .1rem .5rem; border-radius: 999px; font-size: .78rem;
+            white-space: nowrap; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem; }
+  .card { background: #f6f8fa; border: 1px solid #d1d9e0; border-radius: 6px; padding: .75rem; }
+  .card .k { color: #59636e; font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+  .card .v { font-size: 1.4rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .scroll { overflow-x: auto; }
+  footer { color: #59636e; font-size: .82rem; text-align: center; padding: 1rem 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Reporte de monitoreo de drift</h1>
+  <p class="meta">bank-term-deposit-mlops &middot; generado el
+     2026-10-13 15:05:32</p>
+
+  <section class="verdict">
+    <h2>MODELO ESTABLE</h2>
+    <p>0 feature(s) con drift severo y 0 con drift
+       moderado, sobre 19 evaluadas
+       (0% del total).</p>
+  </section>
+
+  <section>
+    <h2>Resumen</h2>
+    <div class="cards">
+      <div class="card"><div class="k">Filas referencia</div><div class="v">24,712</div></div>
+      <div class="card"><div class="k">Filas actuales</div><div class="v">3,000</div></div>
+      <div class="card"><div class="k">PSI máximo</div><div class="v">0.005</div></div>
+      <div class="card"><div class="k">Alertas</div><div class="v">0</div></div>
+      <div class="card"><div class="k">Advertencias</div><div class="v">0</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Modelo monitoreado</h2>
+    <table>
+      <tr><th>model_name</th><td><code>bank-term-deposit-classifier</code></td></tr>
+      <tr><th>model_version</th><td><code>1</code></td></tr>
+      <tr><th>decision_threshold</th><td><code>0.42</code></td></tr>
+      <tr><th>run_id</th><td><code>1758bfef05a744acaab4cda6b9de00db</code></td></tr>
+    </table>
+  </section>
+  <section>
+    <h2>Drift de predicciones</h2>
+    <p>La distribución de scores del modelo suele moverse antes de que el
+    desempeño caiga de forma medible: resume en una sola serie el efecto de
+    todos los cambios en las entradas.</p>
+    <table>
+      <tr><th>PSI del score</th><td class="num"><strong>0.0038</strong></td></tr>
+      <tr><th>Severidad</th><td><span class="badge" style="background:#1a7f37">Estable</span></td></tr>
+      <tr><th>Score medio (referencia)</th><td class="num">0.3839</td></tr>
+      <tr><th>Score medio (actual)</th><td class="num">0.3881</td></tr>
+      <tr><th>KS p-valor</th><td class="num">8.93e-02</td></tr>
+    </table>
+  </section>
+  <section>
+    <h2>Desempeño sobre ground truth</h2>
+    <table>
+      <tr><th>pr_auc</th><td class="num">0.4909</td></tr>
+      <tr><th>roc_auc</th><td class="num">0.8183</td></tr>
+      <tr><th>precision</th><td class="num">0.3469</td></tr>
+      <tr><th>recall</th><td class="num">0.6789</td></tr>
+      <tr><th>f1</th><td class="num">0.4592</td></tr>
+      <tr><th>n_rows_evaluated</th><td class="num">8238</td></tr>
+      <tr><th>baseline_pr_auc</th><td class="num">0.4909</td></tr>
+      <tr><th>relative_drop</th><td class="num">-0.0000</td></tr>
+      <tr><th>degraded</th><td class="num">False</td></tr>
+    </table>
+  </section>
+  <section>
+    <h2>Drift por feature</h2>
+    <p>Umbrales de PSI: &lt;0.1 estable &middot;
+       0.1&ndash;0.25 advertencia &middot;
+       &ge;0.25 alerta.</p>
+    <div class="scroll">
+    <table>
+      <thead>
+      <tr>
+        <th>Feature</th><th>Tipo</th><th>PSI</th><th>Severidad</th>
+        <th>Test</th><th>p-valor</th><th>Media ref.</th><th>Media actual</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><code>euribor3m</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0054</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">7.28e-01</td>
+        <td class="num">3.621</td>
+        <td class="num">3.589</td>
+      </tr>
+      <tr>
+        <td><code>month</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0041</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">2.62e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>cons.conf.idx</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0037</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">8.22e-01</td>
+        <td class="num">-40.500</td>
+        <td class="num">-40.510</td>
+      </tr>
+      <tr>
+        <td><code>job</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0036</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">5.66e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>education</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0029</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">3.54e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>nr.employed</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0026</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">7.92e-01</td>
+        <td class="num">5166.959</td>
+        <td class="num">5165.683</td>
+      </tr>
+      <tr>
+        <td><code>cons.price.idx</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0023</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">7.90e-01</td>
+        <td class="num">93.578</td>
+        <td class="num">93.583</td>
+      </tr>
+      <tr>
+        <td><code>emp.var.rate</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0014</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">8.43e-01</td>
+        <td class="num">0.085</td>
+        <td class="num">0.066</td>
+      </tr>
+      <tr>
+        <td><code>age</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0014</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">7.36e-01</td>
+        <td class="num">40.005</td>
+        <td class="num">39.737</td>
+      </tr>
+      <tr>
+        <td><code>day_of_week</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0010</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">6.25e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>marital</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0007</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">6.42e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>campaign</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0006</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">5.15e-01</td>
+        <td class="num">2.571</td>
+        <td class="num">2.595</td>
+      </tr>
+      <tr>
+        <td><code>default</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0006</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">6.16e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>housing</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0005</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">5.14e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>poutcome</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0003</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">6.49e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>loan</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0002</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">8.05e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>contact</code></td>
+        <td>categorical</td>
+        <td class="num"><strong>0.0001</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>chi-cuadrado</td>
+        <td class="num">6.76e-01</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
+      </tr>
+      <tr>
+        <td><code>previous</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0000</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">9.99e-01</td>
+        <td class="num">0.175</td>
+        <td class="num">0.186</td>
+      </tr>
+      <tr>
+        <td><code>pdays</code></td>
+        <td>numeric</td>
+        <td class="num"><strong>0.0000</strong></td>
+        <td><span class="badge" style="background:#1a7f37">Estable</span></td>
+        <td>kolmogorov-smirnov</td>
+        <td class="num">1.00e+00</td>
+        <td class="num">962.074</td>
+        <td class="num">959.262</td>
+      </tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <footer>Generado por <code>src/monitoring/report.py</code></footer>
+</div>
+</body>
+</html>

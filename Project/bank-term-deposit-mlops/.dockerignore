@@ -1,0 +1,36 @@
+# Todo lo que no debe entrar en el contexto del build: reduce el tamaño del
+# contexto y evita invalidar capas por cambios irrelevantes.
+.venv/
+__pycache__/
+*.py[cod]
+.git/
+.github/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.prefect/
+
+# Notebooks, tests y documentación: no se usan en runtime.
+notebooks/
+tests/
+docs/
+
+# Datos y artefactos: se montan como volumen o se regeneran.
+data/
+reports/
+logs/
+mlruns/
+mlartifacts/
+mlflow.db
+
+# El campeón exportado sí entra en la imagen: es lo que permite que el
+# contenedor sirva predicciones sin un tracking server (deployment en cloud).
+models/*
+!models/champion/
+
+# Local
+.env
+.coverage
+htmlcov/
+*.md
+!README.md

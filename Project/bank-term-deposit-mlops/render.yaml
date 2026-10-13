@@ -1,0 +1,43 @@
+# =============================================================================
+# Blueprint de Render (render.com) para la API de predicción.
+#
+# Es la opción de cloud más simple que conocemos para este proyecto: declarativa
+# en un archivo, construye desde el Dockerfile que ya existe, y el plan gratuito
+# no pide tarjeta de crédito.
+#
+# Funciona porque el contenedor lleva el modelo dentro (`models/champion/`,
+# ~1 MB, generado por `scripts/export_model.py`): no hace falta desplegar
+# también un tracking server de MLflow ni una base de datos.
+#
+# Pasos:
+#   1. uv run python scripts/export_model.py
+#   2. commit de models/champion/ y push a GitHub
+#   3. En Render: New > Blueprint, apuntar al repositorio
+#
+# Ver docs/deployment.md para el detalle y las alternativas.
+# =============================================================================
+
+services:
+  - type: web
+    name: bank-term-deposit-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+
+    envVars:
+      # Servir la copia local del modelo: en el contenedor no hay tracking
+      # server, y sin esto el arranque gastaría tiempo en una conexión que
+      # siempre falla antes de caer al fallback.
+      - key: BTD_SERVING__PREFER_LOCAL_MODEL
+        value: "true"
+
+      # Render inyecta el puerto a escuchar.
+      - key: PORT
+        value: "8000"
+
+      - key: PYTHONUNBUFFERED
+        value: "1"

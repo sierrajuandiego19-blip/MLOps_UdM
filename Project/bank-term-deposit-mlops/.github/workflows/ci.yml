@@ -1,0 +1,166 @@
+# =============================================================================
+# CI del proyecto, asumiendo que ESTA carpeta es la raíz del repositorio.
+#
+# El proyecto vive dentro del monorepo del curso, y GitHub Actions solo lee
+# workflows de `.github/workflows/` en la raíz del repo. Por eso existen dos
+# copias:
+#
+#   * esta — para cuando el proyecto se extrae a su propio repositorio
+#     (`git init` en esta carpeta y push); es la configuración canónica.
+#   * `<raíz del monorepo>/.github/workflows/project-mlops-ci.yml` — los mismos
+#     jobs con `working-directory` apuntando aquí; es la que se ejecuta hoy.
+#
+# Ver docs/deployment.md.
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint y formato
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Instalar dependencias
+        run: uv sync --all-groups --frozen
+
+      - name: Ruff (lint)
+        run: uv run ruff check src tests
+
+      - name: Black (formato)
+        run: uv run black --check src tests
+
+  tests:
+    name: Tests unitarios
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Instalar dependencias
+        run: uv sync --all-groups --frozen
+
+      # La suite corre sobre datos sintéticos: no descarga el dataset ni
+      # necesita un modelo entrenado, así que son segundos y no minutos.
+      - name: pytest con cobertura
+        run: uv run pytest --cov=src --cov-report=term-missing --cov-report=xml
+
+      - name: Subir reporte de cobertura
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage.xml
+          if-no-files-found: ignore
+
+  pipeline-smoke:
+    name: Smoke test del pipeline
+    runs-on: ubuntu-latest
+    needs: [quality, tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Instalar dependencias
+        run: uv sync --frozen
+
+      # Entrena de verdad (descargando el dataset) pero sin tuning: verifica
+      # que el pipeline completo funciona en una máquina limpia, que es
+      # exactamente lo que hará quien evalúe el proyecto.
+      - name: Pipeline de entrenamiento (sin tuning)
+        env:
+          BTD_TRAINING__CV_FOLDS: 3
+        run: |
+          uv run python -c "
+          from src.pipelines.training_flow import training_pipeline
+          result = training_pipeline(skip_tuning=True)
+          assert result['status'] == 'success'
+          assert result['test_metrics']['test_roc_auc'] > 0.70, 'el modelo no supera el piso de calidad'
+          print('ROC-AUC:', result['test_metrics']['test_roc_auc'])
+          "
+
+      - name: Scoring batch sobre el modelo recién entrenado
+        run: |
+          uv run python -c "
+          from src.pipelines.batch_scoring_flow import batch_scoring_pipeline
+          result = batch_scoring_pipeline(n_rows=500)
+          assert result['n_clients'] == 500
+          print('Clientes puntuados:', result['n_clients'])
+          "
+
+      - name: Monitoreo (debe detectar el drift inyectado y no inventarlo)
+        run: |
+          uv run python -c "
+          from src.pipelines.monitoring_flow import monitoring_pipeline
+          stable = monitoring_pipeline(drift_strength=0.0, n_rows=1500)
+          assert not stable['decision']['retrain_recommended'], 'falso positivo de drift'
+          drifted = monitoring_pipeline(drift_strength=0.8, n_rows=1500)
+          assert drifted['decision']['retrain_recommended'], 'el drift inyectado no se detecto'
+          print('Monitoreo verificado en ambos escenarios')
+          "
+
+  docker:
+    name: Build de la imagen
+    runs-on: ubuntu-latest
+    needs: [quality, tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build de la imagen de la API
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: bank-term-deposit-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Sin modelo registrado la API debe arrancar en modo `degraded`, no
+      # caerse: es justamente el comportamiento que se quiere en producción.
+      - name: Verificar que el contenedor arranca
+        run: |
+          docker run -d --name api-ci -p 8000:8000 bank-term-deposit-api:ci
+          for attempt in $(seq 1 40); do
+            if curl -sf http://localhost:8000/health > /dev/null; then
+              echo "La API respondio tras ${attempt}s"
+              curl -s http://localhost:8000/health
+              docker rm -f api-ci
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "La API no respondio en 40s"
+          docker logs api-ci
+          docker rm -f api-ci
+          exit 1

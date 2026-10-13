@@ -1,0 +1,71 @@
+[project]
+name = "bank-term-deposit-mlops"
+version = "0.1.0"
+description = "Proyecto final MLOps: predicción de suscripción a depósito a plazo fijo (UCI Bank Marketing)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "jinja2>=3.1.6",
+    "joblib>=1.4.0",
+    "matplotlib>=3.10.0",
+    "mlflow>=3.0.0",
+    "numpy>=2.0.0",
+    "optuna>=4.0.0",
+    "pandas>=2.2.0",
+    "prefect>=3.4.0",
+    "pyarrow>=17.0.0",
+    "pydantic>=2.9.0",
+    "pyyaml>=6.0.0",
+    "requests>=2.32.0",
+    "scikit-learn==1.6.1",
+    "scipy>=1.14.0",
+    "seaborn>=0.13.2",
+    "uvicorn[standard]>=0.30.0",
+    "xgboost>=2.1.0",
+]
+
+# Este proyecto es su propia raíz de workspace: así `uv sync` funciona dentro de
+# esta carpeta sin depender del pyproject.toml del repositorio del curso.
+[tool.uv.workspace]
+members = []
+
+[dependency-groups]
+dev = [
+    "black>=24.10.0",
+    "httpx>=0.28.1",
+    "ipykernel>=6.29.0",
+    "nbconvert>=7.16.0",
+    "nbformat>=5.10.0",
+    "pre-commit>=4.0.0",
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [".venv", "notebooks", "data", "mlruns"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+extend-exclude = "notebooks"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-v --tb=short"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]

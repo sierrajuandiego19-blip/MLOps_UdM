@@ -1,0 +1,256 @@
+{
+  "generated_at": "2026-10-13T15:05:32",
+  "summary": {
+    "n_reference": 24712,
+    "n_current": 3000,
+    "n_features_checked": 19,
+    "n_alerts": 0,
+    "n_warnings": 0,
+    "share_drifted": 0.0,
+    "needs_retraining": false,
+    "alert_features": [],
+    "warning_features": [],
+    "max_psi": 0.0054,
+    "prediction_drift_psi": 0.0038,
+    "prediction_drift_severity": "stable"
+  },
+  "features": [
+    {
+      "feature": "euribor3m",
+      "tipo": "numeric",
+      "psi": 0.0054,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.0133,
+      "p_valor": 0.727573,
+      "media_referencia": 3.6213,
+      "media_actual": 3.5887
+    },
+    {
+      "feature": "month",
+      "tipo": "categorical",
+      "psi": 0.0041,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 11.2071,
+      "p_valor": 0.261779,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "cons.conf.idx",
+      "tipo": "numeric",
+      "psi": 0.0037,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.0121,
+      "p_valor": 0.821775,
+      "media_referencia": -40.4998,
+      "media_actual": -40.5102
+    },
+    {
+      "feature": "job",
+      "tipo": "categorical",
+      "psi": 0.0036,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 9.6123,
+      "p_valor": 0.565562,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "education",
+      "tipo": "categorical",
+      "psi": 0.0029,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 7.7664,
+      "p_valor": 0.353646,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "nr.employed",
+      "tipo": "numeric",
+      "psi": 0.0026,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.0125,
+      "p_valor": 0.791612,
+      "media_referencia": 5166.9589,
+      "media_actual": 5165.6827
+    },
+    {
+      "feature": "cons.price.idx",
+      "tipo": "numeric",
+      "psi": 0.0023,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.0125,
+      "p_valor": 0.790227,
+      "media_referencia": 93.578,
+      "media_actual": 93.583
+    },
+    {
+      "feature": "emp.var.rate",
+      "tipo": "numeric",
+      "psi": 0.0014,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.0118,
+      "p_valor": 0.84262,
+      "media_referencia": 0.0852,
+      "media_actual": 0.0658
+    },
+    {
+      "feature": "age",
+      "tipo": "numeric",
+      "psi": 0.0014,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.0132,
+      "p_valor": 0.735693,
+      "media_referencia": 40.0053,
+      "media_actual": 39.7367
+    },
+    {
+      "feature": "day_of_week",
+      "tipo": "categorical",
+      "psi": 0.001,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 2.6102,
+      "p_valor": 0.625026,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "marital",
+      "tipo": "categorical",
+      "psi": 0.0007,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 1.6781,
+      "p_valor": 0.641819,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "campaign",
+      "tipo": "numeric",
+      "psi": 0.0006,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.0158,
+      "p_valor": 0.514857,
+      "media_referencia": 2.5709,
+      "media_actual": 2.5947
+    },
+    {
+      "feature": "default",
+      "tipo": "categorical",
+      "psi": 0.0006,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 0.9674,
+      "p_valor": 0.616491,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "housing",
+      "tipo": "categorical",
+      "psi": 0.0005,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 1.3294,
+      "p_valor": 0.514424,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "poutcome",
+      "tipo": "categorical",
+      "psi": 0.0003,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 0.8658,
+      "p_valor": 0.648628,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "loan",
+      "tipo": "categorical",
+      "psi": 0.0002,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 0.4331,
+      "p_valor": 0.80528,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "contact",
+      "tipo": "categorical",
+      "psi": 0.0001,
+      "severidad": "stable",
+      "test": "chi-cuadrado",
+      "estadistico": 0.1749,
+      "p_valor": 0.675832,
+      "media_referencia": null,
+      "media_actual": null
+    },
+    {
+      "feature": "previous",
+      "tipo": "numeric",
+      "psi": 0.0,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.007,
+      "p_valor": 0.999273,
+      "media_referencia": 0.1751,
+      "media_actual": 0.186
+    },
+    {
+      "feature": "pdays",
+      "tipo": "numeric",
+      "psi": 0.0,
+      "severidad": "stable",
+      "test": "kolmogorov-smirnov",
+      "estadistico": 0.0053,
+      "p_valor": 0.999999,
+      "media_referencia": 962.0744,
+      "media_actual": 959.2617
+    }
+  ],
+  "prediction_drift": {
+    "feature": "prediction_score",
+    "tipo": "numeric",
+    "psi": 0.0038,
+    "severidad": "stable",
+    "test": "kolmogorov-smirnov",
+    "estadistico": 0.024,
+    "p_valor": 0.08926,
+    "media_referencia": 0.3839,
+    "media_actual": 0.3881
+  },
+  "performance": {
+    "pr_auc": 0.4909,
+    "roc_auc": 0.8183,
+    "precision": 0.3469,
+    "recall": 0.6789,
+    "f1": 0.4592,
+    "n_rows_evaluated": 8238,
+    "baseline_pr_auc": 0.4909,
+    "relative_drop": -0.0,
+    "degraded": false
+  },
+  "model": {
+    "model_name": "bank-term-deposit-classifier",
+    "model_version": "1",
+    "decision_threshold": 0.42,
+    "run_id": "1758bfef05a744acaab4cda6b9de00db"
+  }
+}

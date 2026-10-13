@@ -1,0 +1,147 @@
+# =============================================================================
+# CI del proyecto final (Project/bank-term-deposit-mlops).
+#
+# Es la copia que GitHub Actions ejecuta: los workflows solo se leen desde
+# `.github/workflows/` en la raíz del repositorio, y el proyecto vive en un
+# subdirectorio. La copia canónica —para cuando el proyecto se extraiga a su
+# propio repositorio— está en
+# `Project/bank-term-deposit-mlops/.github/workflows/ci.yml`.
+# =============================================================================
+
+name: CI Proyecto MLOps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Project/bank-term-deposit-mlops/**"
+      - ".github/workflows/project-mlops-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "Project/bank-term-deposit-mlops/**"
+  workflow_dispatch:
+
+concurrency:
+  group: project-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: Project/bank-term-deposit-mlops
+
+jobs:
+  quality:
+    name: Lint y formato
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: Project/bank-term-deposit-mlops/uv.lock
+
+      - name: Instalar dependencias
+        run: uv sync --all-groups --frozen
+
+      - name: Ruff (lint)
+        run: uv run ruff check src tests
+
+      - name: Black (formato)
+        run: uv run black --check src tests
+
+  tests:
+    name: Tests unitarios
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: Project/bank-term-deposit-mlops/uv.lock
+
+      - name: Instalar dependencias
+        run: uv sync --all-groups --frozen
+
+      - name: pytest con cobertura
+        run: uv run pytest --cov=src --cov-report=term-missing
+
+  pipeline-smoke:
+    name: Smoke test del pipeline
+    runs-on: ubuntu-latest
+    needs: [quality, tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: Project/bank-term-deposit-mlops/uv.lock
+
+      - name: Instalar dependencias
+        run: uv sync --frozen
+
+      - name: Pipeline de entrenamiento (sin tuning)
+        env:
+          BTD_TRAINING__CV_FOLDS: 3
+        run: |
+          uv run python -c "
+          from src.pipelines.training_flow import training_pipeline
+          result = training_pipeline(skip_tuning=True)
+          assert result['status'] == 'success'
+          assert result['test_metrics']['test_roc_auc'] > 0.70
+          print('ROC-AUC:', result['test_metrics']['test_roc_auc'])
+          "
+
+      - name: Scoring batch
+        run: |
+          uv run python -c "
+          from src.pipelines.batch_scoring_flow import batch_scoring_pipeline
+          assert batch_scoring_pipeline(n_rows=500)['n_clients'] == 500
+          "
+
+      - name: Monitoreo
+        run: |
+          uv run python -c "
+          from src.pipelines.monitoring_flow import monitoring_pipeline
+          assert not monitoring_pipeline(drift_strength=0.0, n_rows=1500)['decision']['retrain_recommended']
+          assert monitoring_pipeline(drift_strength=0.8, n_rows=1500)['decision']['retrain_recommended']
+          "
+
+  docker:
+    name: Build de la imagen
+    runs-on: ubuntu-latest
+    needs: [quality, tests]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build de la imagen de la API
+        uses: docker/build-push-action@v6
+        with:
+          context: Project/bank-term-deposit-mlops
+          push: false
+          load: true
+          tags: bank-term-deposit-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verificar que el contenedor arranca
+        run: |
+          docker run -d --name api-ci -p 8000:8000 bank-term-deposit-api:ci
+          for attempt in $(seq 1 40); do
+            if curl -sf http://localhost:8000/health > /dev/null; then
+              curl -s http://localhost:8000/health
+              docker rm -f api-ci
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs api-ci
+          docker rm -f api-ci
+          exit 1

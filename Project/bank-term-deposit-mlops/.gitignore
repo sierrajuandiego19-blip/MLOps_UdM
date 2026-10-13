@@ -1,0 +1,123 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+dist/
+
+# Staging del deployment: `scripts/deploy_huggingface.py` ensambla aquí el
+# repositorio del Space. Se regenera en cada ejecución.
+build/
+
+# Entornos
+.venv/
+venv/
+.env
+
+# uv
+.uv/
+
+# Prefect (estado local de cada máquina, no se comparte)
+.prefect/
+
+# Copia de seguridad que crea scripts/relocate_mlflow.py
+mlflow.db.bak
+
+# Artefactos de MLflow con otro layout (no se usa en este proyecto)
+mlartifacts/
+
+logs/*
+!logs/.gitkeep
+
+# =============================================================================
+# EL ESTADO DE LA DEMO SÍ SE VERSIONA
+#
+# Normalmente `mlruns/`, `mlflow.db` y `data/` no van en git. Aquí sí, y es una
+# decisión deliberada: el proyecto se evalúa por pares y se expone en vivo, así
+# que quien lo clone tiene que obtener **exactamente** el mismo estado —los
+# mismos experimentos en MLflow, el mismo champion/challenger, el mismo reporte
+# de drift— sin esperar 12 minutos a que reentrene.
+#
+# Son ~30 MB. El coste es tener binarios generados en el repositorio; el
+# beneficio es que `git clone` + un script deja el proyecto listo para mostrar.
+#
+# IMPORTANTE: MLflow guarda rutas ABSOLUTAS. Después de clonar hay que ejecutar
+#   uv run python scripts/relocate_mlflow.py
+# o los artefactos no se encuentran. Ver docs/compartir.md.
+#
+# Para volver a un repositorio limpio: `./run.ps1 clean-all` (o `make clean-all`).
+# =============================================================================
+!mlflow.db
+!mlruns/
+!mlruns/**
+!data/
+!data/**
+!reports/
+!reports/**
+
+# Lo que sigue excluido pese a lo anterior: el entorno y las cachés
+.venv/
+**/__pycache__/
+
+# El campeón exportado (~1 MB): es lo que permite desplegar la API en cloud sin
+# un tracking server. Ver docs/deployment.md.
+!models/
+!models/**
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Testing / linting
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# IDE / OS
+.idea/
+.DS_Store
+Thumbs.db
+
+# =============================================================================
+# RE-INCLUSIONES OBLIGATORIAS
+#
+# El .gitignore del repositorio del curso ignora de forma global `*.yaml`,
+# `*.yml`, `*.json`, `*.txt`, `*.pkl` y el directorio `.vscode/` — reglas
+# pensadas para datos y artefactos de modelo. Como efecto colateral dejarían
+# fuera del control de versiones la configuración del proyecto, los workflows
+# de CI, el compose y el modelo exportado.
+#
+# Sin esos archivos, un clon nuevo del repositorio NO ARRANCA: `configs/
+# config.yaml` es el único punto de verdad del proyecto. Por eso se re-incluyen
+# aquí explícitamente; las reglas de un .gitignore más profundo tienen
+# precedencia sobre las del directorio padre.
+#
+# Verificación:
+#   git check-ignore -v configs/config.yaml   # no debe devolver nada
+# =============================================================================
+
+# Configuración del proyecto
+!configs/
+!configs/*.yaml
+
+# Infraestructura y CI
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
+!docker-compose.yml
+!render.yaml
+!.pre-commit-config.yaml
+
+# Ajustes del editor: se comparten a propósito, para que el intérprete y el
+# runner de tests queden configurados al abrir el proyecto.
+!.vscode/
+!.vscode/*.json
+
+# Marcadores de directorios vacíos (el padre ignora `logs/` completo)
+!logs/
+!logs/.gitkeep
+
+# Modelo exportado para deployment: `*.pkl`, `*.yaml`, `*.json` y `*.txt`
+# quedarían fuera uno por uno.
+!models/champion/**

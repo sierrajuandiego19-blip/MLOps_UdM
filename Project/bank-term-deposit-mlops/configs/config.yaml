@@ -1,0 +1,104 @@
+# =============================================================================
+# Configuración central del proyecto
+# Todos los módulos leen de aquí (ver src/config.py). No hay rutas ni
+# hiperparámetros hardcodeados en el código.
+# =============================================================================
+
+project:
+  name: bank-term-deposit-mlops
+  seed: 42
+
+data:
+  # UCI Bank Marketing (Moro et al., 2014) - variante "bank-additional-full"
+  source_url: https://archive.ics.uci.edu/static/public/222/bank+marketing.zip
+  outer_zip_member: bank-additional.zip
+  inner_csv_member: bank-additional/bank-additional-full.csv
+  csv_separator: ";"
+  target: y
+  positive_label: "yes"
+  # `duration` se descarta: solo se conoce DESPUÉS de terminar la llamada, por
+  # lo que usarla produce data leakage y un modelo inútil en producción.
+  # Lo advierte la propia documentación del dataset.
+  drop_columns:
+    - duration
+  test_size: 0.2
+  valid_size: 0.2
+
+features:
+  numeric:
+    - age
+    - campaign
+    - pdays
+    - previous
+    - emp.var.rate
+    - cons.price.idx
+    - cons.conf.idx
+    - euribor3m
+    - nr.employed
+  categorical:
+    - job
+    - marital
+    - education
+    - default
+    - housing
+    - loan
+    - contact
+    - month
+    - day_of_week
+    - poutcome
+
+training:
+  # Métrica de selección: PR-AUC (average precision). Con 11% de positivos,
+  # el accuracy es engañoso y ROC-AUC es optimista; PR-AUC mide lo que importa:
+  # la calidad del ranking de los clientes que sí van a suscribir.
+  primary_metric: pr_auc
+  cv_folds: 5
+  optuna_trials: 20
+  optuna_timeout_seconds: 600
+  # Umbral de negocio para convertir probabilidad -> decisión de llamar
+  decision_threshold: 0.30
+
+business:
+  # Supuestos del caso de negocio (ver docs/business_case.md)
+  cost_per_call_usd: 8.0
+  profit_per_subscription_usd: 80.0
+  # Capacidad del call center: fracción de la base que alcanza a llamar
+  call_capacity_fraction: 0.20
+
+mlflow:
+  tracking_uri: sqlite:///mlflow.db
+  experiment_name: bank-term-deposit
+  registered_model_name: bank-term-deposit-classifier
+  champion_alias: champion
+
+serving:
+  # Copia autocontenida del campeón, generada por `scripts/export_model.py`.
+  # Permite servir el modelo donde no hay un tracking server de MLflow
+  # (por ejemplo un contenedor en cloud). Ver docs/deployment.md.
+  local_model_dir: models/champion
+  # true  -> cargar siempre del directorio local, sin consultar el registry
+  # false -> intentar el registry primero y caer al directorio local si falla
+  prefer_local_model: false
+
+monitoring:
+  # Umbrales de alerta de drift
+  psi_warning: 0.10
+  psi_alert: 0.25
+  ks_pvalue_alert: 0.05
+  # Caída relativa de PR-AUC vs. referencia que dispara reentrenamiento
+  performance_drop_alert: 0.10
+
+api:
+  host: 0.0.0.0
+  port: 8000
+  title: Bank Term Deposit Prediction API
+  version: "1.0.0"
+
+paths:
+  data_raw: data/raw
+  data_processed: data/processed
+  data_reference: data/reference
+  data_predictions: data/predictions
+  models: models
+  reports: reports
+  logs: logs

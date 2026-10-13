@@ -1,0 +1,75 @@
+# =============================================================================
+# Stack local: MLflow (tracking + registry) y la API de predicción.
+#
+#   docker compose up --build
+#
+# La API lee el modelo del tracking server, no de un archivo copiado dentro de
+# la imagen: promover una versión nueva al alias `champion` y llamar a
+# `POST /reload` cambia el modelo servido sin reconstruir nada.
+# =============================================================================
+
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.1.1
+    container_name: btd-mlflow
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --default-artifact-root /mlflow/mlartifacts
+      --host 0.0.0.0
+      --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      # Se monta el estado del host: los experimentos corridos en local ya
+      # aparecen en la UI del contenedor.
+      - ./mlflow.db:/mlflow/mlflow.db
+      - ./mlruns:/mlflow/mlartifacts
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: btd-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Override de configuración vía entorno (ver src/config.py): dentro de la
+      # red de Compose el tracking server es `mlflow`, no `localhost`.
+      BTD_MLFLOW__TRACKING_URI: http://mlflow:5000
+    volumes:
+      # Los artefactos del modelo se leen desde la ruta que registró MLflow.
+      - ./mlruns:/mlflow/mlartifacts:ro
+      - ./reports:/app/reports
+      - ./data:/app/data
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Perfil opcional: ejecuta el pipeline de entrenamiento contra el MLflow del
+  # stack y termina.  `docker compose --profile training up trainer`
+  trainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: btd-trainer
+    profiles: ["training"]
+    command: ["python", "-m", "src.pipelines.training_flow"]
+    environment:
+      BTD_MLFLOW__TRACKING_URI: http://mlflow:5000
+    volumes:
+      - ./mlruns:/mlflow/mlartifacts
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./reports:/app/reports
+    depends_on:
+      mlflow:
+        condition: service_healthy
