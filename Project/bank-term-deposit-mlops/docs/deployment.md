@@ -8,7 +8,7 @@ predicción online y una batch sobre el mismo cliente den el mismo número.
 |---|---|---|
 | **API REST** (FastAPI) | Decisión en tiempo real, un cliente a la vez | Verificado en local y en contenedor |
 | **Scoring batch** (Prefect) | Lista de llamadas diaria para el call center | Verificado en local |
-| **Cloud** (Render / HF Spaces) | API pública | Configuración lista; **no ejecutada** — ver la sección de cloud |
+| **Cloud** (Render) | API pública | **Desplegada y verificada**: <https://bank-term-deposit-api.onrender.com/docs> |
 
 ---
 
@@ -158,6 +158,8 @@ Sí, con margen. Medido en local con el modelo cargado y tras 20 predicciones:
 Pico de 324 MB contra un límite de 512 MB. El consumo no crece con el tráfico
 porque el modelo se carga una sola vez y se cachea.
 
+**Desplegada en: <https://bank-term-deposit-api.onrender.com/docs>**
+
 ### Pasos
 
 ```bash
@@ -186,31 +188,31 @@ a mano.
 ### Las dos limitaciones del tier gratuito
 
 1. **Se duerme tras 15 minutos sin tráfico**, y el arranque en frío tarda
-   30-60 s. Para una demostración en vivo: abrir la URL un par de minutos antes
-   de empezar.
+   30-60 s. No se desactiva ni se borra: despierta sola con la primera
+   petición. Conviene avisarlo a quien reciba el enlace, para que no lo
+   interprete como un servicio caído.
 2. **Sistema de archivos efímero**: lo que el servicio escriba en disco se
    pierde al reiniciar. No afecta aquí, porque la API no persiste nada; el
    scoring batch, que sí escribe, corre en local.
 
 ### Estado de verificación
 
-> **El push al Space lo hace quien tenga la cuenta**; el build de la imagen
-> ocurre en la infraestructura de Hugging Face.
->
-> Lo que **sí** está verificado localmente es exactamente el contenido que se
-> sube. Se ejecutó la API usando `build/huggingface-space/` como raíz, con
-> `BTD_SERVING__PREFER_LOCAL_MODEL=true` y sin ningún MLflow accesible:
->
-> ```
-> /health:  healthy | modelo bank-term-deposit-classifier v1
-> /predict: prob = 0.623523 | version 1
-> coincide con el valor del registry (0.623523): True
-> ```
->
-> Es decir: el código, la configuración y el modelo que viajan al Space sirven
-> predicciones **idénticas** a las del registry, sin tracking server. Cubierto
-> además como regresión en
-> `tests/unit/test_registry.py::test_local_champion_round_trip_preserves_predictions`.
+Desplegada y comprobada contra el servicio en producción:
+
+| Comprobación | Resultado |
+|---|---|
+| `GET /health` | `healthy`, modelo v1 cargado, 0,8 s |
+| `GET /model-info` | PR-AUC 0,4909 · ROC-AUC 0,8183 · umbral 0,42 |
+| `POST /predict` | `0.623523` — **idéntica a la predicción local** |
+| `POST /predict` con `job` inválido | HTTP 422, como debe |
+| `GET /docs` | HTTP 200 |
+| `GET /metrics` | `api_model_loaded 1` |
+
+Que la predicción remota coincida dígito a dígito con la local es la
+comprobación que importa: confirma que la copia del modelo que viaja en la
+imagen es la misma que registró MLflow. Está cubierto además como regresión en
+`tests/unit/test_registry.py::test_local_champion_round_trip_preserves_predictions`
+y en el job `shipped-state` del CI.
 
 ---
 

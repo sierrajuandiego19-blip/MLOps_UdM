@@ -3,10 +3,8 @@
 Texto listo para copiar y enviar al profesor (y reutilizable para los
 compañeros que hagan la evaluación por pares).
 
-Antes de enviarlo, reemplazar:
-
-- `[NOMBRES]` — tus nombres
-- `[LINK DE RENDER]` — la URL del servicio en Render, o borrar esa línea si no
+Antes de enviarlo, reemplazar `[NOMBRES]` por tus nombres.
+- `https://bank-term-deposit-api.onrender.com/docs` — la URL del servicio en Render, o borrar esa línea si no
   alcanzaron a desplegarlo
 
 ---
@@ -22,7 +20,7 @@ Antes de enviarlo, reemplazar:
 > **Repositorio:**
 > https://github.com/sierrajuandiego19-blip/MLOps_UdM/tree/main/Project/bank-term-deposit-mlops
 >
-> **API desplegada:** [LINK DE RENDER]
+> **API desplegada:** https://bank-term-deposit-api.onrender.com/docs
 >
 > (Está en el plan gratuito de Render, que suspende el servicio tras 15 minutos
 > sin tráfico: si tarda ~50 segundos en abrir la primera vez, es el arranque en
@@ -148,7 +146,7 @@ Antes de enviarlo, reemplazar:
 > Entrega del proyecto final — [NOMBRES]
 >
 > **Repo:** https://github.com/sierrajuandiego19-blip/MLOps_UdM/tree/main/Project/bank-term-deposit-mlops
-> **API desplegada:** [LINK DE RENDER]
+> **API desplegada:** https://bank-term-deposit-api.onrender.com/docs
 > (plan gratuito: la primera carga puede tardar ~50 s por el arranque en frio)
 > (plan gratuito: la primera carga puede tardar ~50 s por el arranque en frío)
 >

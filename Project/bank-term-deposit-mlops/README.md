@@ -8,6 +8,10 @@ depósito a plazo fijo, para priorizar las llamadas de un call center.
 Incluye experiment tracking, orquestación, dos modos de deployment, monitoreo de
 drift verificado y CI.
 
+**API desplegada y funcionando: <https://bank-term-deposit-api.onrender.com/docs>**
+*(plan gratuito: si lleva rato sin visitas, la primera carga tarda ~50 s
+mientras el servicio despierta)*
+
 ---
 
 ## Resultado
@@ -390,6 +394,8 @@ Desplegado en **Render** con un Blueprint (`render.yaml` en la raíz del
 repositorio). Se evaluó Hugging Face Spaces, pero desde 2026 exige plan **PRO
 de pago** para cualquier SDK que ejecute código; solo los *Static Spaces*
 siguen gratis y un sitio estático no puede servir el modelo.
+
+**API en producción: <https://bank-term-deposit-api.onrender.com/docs>**
 
 En Render: **New → Blueprint** y seleccionar el repositorio. No hay nada que
 configurar a mano.
