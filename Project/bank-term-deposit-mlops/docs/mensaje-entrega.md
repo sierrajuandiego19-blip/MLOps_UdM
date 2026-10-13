@@ -84,11 +84,6 @@ Para ver las interfaces gráficas, `./run.ps1 demo-up` y luego
 con los flows programados, la documentación interactiva de la API y el reporte
 de monitoreo.
 
-Si prefiere verificarlo desde cero en vez de confiar en el estado que viene en
-el repositorio, `./run.ps1 clean-all` seguido de `./run.ps1 bootstrap`
-reentrena todo. El entrenamiento es determinista, así que debe arrojar las
-mismas métricas.
-
 ---
 
 ## Dónde está cada criterio del enunciado
@@ -155,38 +150,3 @@ Quedamos atentos a cualquier comentario.
 Un saludo,
 Luciano Sanín
 Juan Diego Sierra
-
----
-
-## Versión corta
-
-Para la plataforma del curso, un chat, o si el correo debe ser breve.
-
-> Entrega del proyecto final MLOps — Luciano Sanín y Juan Diego Sierra
->
-> **Repositorio:** <https://github.com/sierrajuandiego19-blip/MLOps_UdM/tree/main/Project/bank-term-deposit-mlops>
-> **API desplegada:** <https://bank-term-deposit-api.onrender.com/docs>
-> *(plan gratuito: la primera carga puede tardar ~50 s mientras el servicio despierta)*
->
-> Predicción de suscripción a depósito a plazo fijo sobre el dataset UCI Bank
-> Marketing. En test: PR-AUC 0,4909 frente a un piso de 0,113, lift de 3,31x en
-> el top 20%, y un 78% menos de llamadas que contactar a toda la base.
->
-> Para ejecutarlo (Python 3.11+ y uv):
->
-> ```
-> git config --global core.longpaths true
-> git clone https://github.com/sierrajuandiego19-blip/MLOps_UdM.git
-> cd MLOps_UdM/Project/bank-term-deposit-mlops
-> ./run.ps1 setup
-> ```
->
-> No hace falta reentrenar: el repositorio incluye el historial de MLflow. El
-> comando debe terminar con `173 passed` y `campeon: ... v1 umbral 0.42`.
->
-> El README tiene una tabla que mapea cada fase del enunciado con el archivo
-> donde está implementada. Los notebooks vienen ejecutados y con salidas.
->
-> Nota: el Dockerfile no lo construimos localmente porque no teníamos Docker;
-> lo construye y verifica el CI en cada push. Tampoco hicimos auditoría de
-> equidad, y está declarado como limitación en la model card.
