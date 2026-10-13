@@ -1,11 +1,5 @@
 # Entrega — Proyecto Final MLOps
 
-> Para enviarlo por **correo**, usar [`correo-entrega.txt`](correo-entrega.txt):
-> es el mismo contenido en texto plano, porque Gmail y Outlook no renderizan
-> las tablas ni los bloques de código de Markdown.
-
----
-
 **Asunto:** Entrega proyecto final MLOps — Predicción de suscripción a depósito a plazo fijo
 
 Profesor,
