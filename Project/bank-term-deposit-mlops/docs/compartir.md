@@ -45,9 +45,13 @@ datos y 10 archivos `MLmodel`.
 ### Pasos para tu compañero
 
 ```powershell
-# 1. Clonar
-git clone git@github.com:sierrajuandiego19-blip/MLOps_UdM.git
-cd MLOps_UdM/Project/bank-term-deposit-mlops
+# 0. Una sola vez: permitir rutas largas (mlruns/ anida bastante)
+git config --global core.longpaths true
+
+# 1. Clonar. Conviene una carpeta poco profunda, no dentro de OneDrive.
+cd C:\dev
+git clone https://github.com/sierrajuandiego19-blip/MLOps_UdM.git
+cd MLOps_UdM\Project\bank-term-deposit-mlops
 
 # 2. Setup: instala, reapunta MLflow y verifica
 ./run.ps1 setup
@@ -94,6 +98,7 @@ necesita internet después del `uv sync`, porque el dataset viene en caché en
 
 | Síntoma | Causa | Solución |
 |---|---|---|
+| `git clone` falla con **"Filename too long"** | Windows limita las rutas a 260 caracteres, y `mlruns/1/models/m-<hash>/artifacts/...` añade 87 | `git config --global core.longpaths true` y volver a clonar, o clonar en una carpeta menos profunda (`C:\dev\`, por ejemplo) |
 | MLflow muestra los runs pero los modelos no cargan | No ejecutó la relocalización | `uv run python scripts/relocate_mlflow.py` |
 | `RuntimeError: No hay un modelo con alias 'champion'` | Ídem | Ídem |
 | MLflow aparece vacío | Abrió el puerto 5000 en vez del **5001** | Ver la nota de `presentacion.md` |
