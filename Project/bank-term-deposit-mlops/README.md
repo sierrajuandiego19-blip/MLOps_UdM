@@ -549,7 +549,8 @@ nadie las descubra en producción:
 | Documento | Contenido |
 |---|---|
 | [`docs/compartir.md`](docs/compartir.md) | Cómo clonarlo en otra máquina, cómo entregarlo, y cómo trabajar en equipo sin romper `mlflow.db` |
-| [`docs/mensaje-entrega.md`](docs/mensaje-entrega.md) | Texto listo para enviar al profesor y a quienes hagan la evaluación por pares |
+| [`docs/correo-entrega.txt`](docs/correo-entrega.txt) | Texto plano listo para pegar en un correo, sin Markdown que se rompa |
+| [`docs/mensaje-entrega.md`](docs/mensaje-entrega.md) | La misma entrega en Markdown, para plataformas que sí lo renderizan |
 | [`docs/business_case.md`](docs/business_case.md) | Problema, supuestos, métricas de éxito, timeline, alcance |
 | [`docs/monitoring.md`](docs/monitoring.md) | Monitoreo en cuatro capas, disparadores, verificación |
 | [`docs/deployment.md`](docs/deployment.md) | Local, Docker, cloud, CI/CD, schedules, troubleshooting |
