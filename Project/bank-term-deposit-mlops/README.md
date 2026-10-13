@@ -339,7 +339,8 @@ bank-term-deposit-mlops/
 | **1.1** | Problema, métricas, alcance, timeline, caso de negocio | Completo | [`docs/business_case.md`](docs/business_case.md) |
 | **1.2** | Git, entorno virtual (uv), dependencias | Completo | `pyproject.toml`, `uv.lock` |
 | **1.3** | EDA, preprocesamiento, baseline | Completo | `notebooks/01_eda.ipynb`, `02_baseline.ipynb` |
-| **2.1** | MLflow configurado, experimentos, tracking | Completo | `src/models/train.py` |
+| **2.1** | MLflow configurado, experimentos, tracking de parámetros y métricas | Completo | `src/models/train.py` |
+| **2.1** | "Logging automático" | **Resuelto con logging explícito, no con `mlflow.autolog()`** | Ver la nota de abajo |
 | **2.2** | RF, XGBoost, hiperparámetros, cross-validation | Completo | 5 candidatos + 20 trials + CV de 5 folds |
 | **2.3** | Registry, versionado con tags, staging/production, documentación | Completo | Alias `champion`/`challenger`, `models/model_card.md` |
 | **3.1** | Prefect: flows de preprocesamiento y entrenamiento, scheduling | Completo | `src/pipelines/`, `deploy_flows.py` |
@@ -354,6 +355,34 @@ bank-term-deposit-mlops/
 | **6.1** | Unit tests | Completo | 153 tests |
 | **6.2** | Linter, formatter, pre-commit *(nice to have)* | Completo | ruff, black, `.pre-commit-config.yaml` |
 | **6.3** | README, documentación de API, guías de deployment | Completo | `docs/` |
+
+### Sobre el "logging automático" (fase 2.1)
+
+El enunciado pide implementar *logging automático*, que normalmente significa
+`mlflow.autolog()`. **No lo usamos**, y es una decisión deliberada que conviene
+explicar porque alguien con la lista de chequeo en la mano puede buscar esa
+línea y no encontrarla.
+
+`mlflow.autolog()` registra automáticamente los parámetros y métricas estándar
+de scikit-learn. El problema es que en este proyecto eso **se queda corto**:
+
+1. Las métricas que importan aquí son **de negocio** —utilidad en dólares, lift
+   en el top 20%, costo por adquisición, suscripciones perdidas— y autolog no
+   las conoce. Son ~20 métricas por run que hay que calcular y registrar
+   explícitamente (`src/models/evaluate.py`).
+2. Con un `Pipeline` de sklearn, autolog registra los parámetros del pipeline
+   completo con nombres poco legibles, en vez de los del estimador final.
+3. La búsqueda con Optuna necesita **runs anidados** (un run padre y 20 hijos),
+   estructura que hay que crear a mano con `mlflow.start_run(nested=True)`.
+
+Lo que sí es automático es el **proceso**: cada candidato que entra en
+`train_candidate()` queda registrado por completo —parámetros, métricas
+técnicas, métricas de negocio, tags, firma del modelo y el modelo
+serializado— sin que nadie tenga que acordarse de loguear nada. El pipeline de
+Prefect lo hace para los 5 candidatos y los 20 trials en una sola ejecución.
+
+En resumen: el requisito se cumple con logging explícito y exhaustivo, que da
+estrictamente más información que autolog. Es `src/models/train.py:168-250`.
 
 ### Sobre el deployment en cloud
 
@@ -513,6 +542,7 @@ nadie las descubra en producción:
 |---|---|
 | [`docs/presentacion.md`](docs/presentacion.md) | **Guion de exposición para 2 personas (25 min)**: qué levantar, qué decir en cada pantalla, preguntas probables y plan B |
 | [`docs/compartir.md`](docs/compartir.md) | Cómo clonarlo en otra máquina, cómo entregarlo, y cómo trabajar en equipo sin romper `mlflow.db` |
+| [`docs/mensaje-entrega.md`](docs/mensaje-entrega.md) | Texto listo para enviar al profesor y a quienes hagan la evaluación por pares |
 | [`docs/business_case.md`](docs/business_case.md) | Problema, supuestos, métricas de éxito, timeline, alcance |
 | [`docs/monitoring.md`](docs/monitoring.md) | Monitoreo en cuatro capas, disparadores, verificación |
 | [`docs/deployment.md`](docs/deployment.md) | Local, Docker, cloud, CI/CD, schedules, troubleshooting |
